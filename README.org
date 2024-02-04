@@ -16,9 +16,9 @@ iex(13)> Application.get_all_env(:nx)
 
 iex -S mix
 Application.get_all_env(:exla)
+Application.get_all_env(:nx)
 Nx.global_default_backend({EXLA.Backend, client: :host})
 Application.get_all_env(:exla)
-Application.get_all_env(:nx)
 
 # b16才能成功load要不不够
 alias HelloDiffusion.Model
