@@ -4,11 +4,11 @@ import Config
 # Load the parameters into the CPU
 config :nx, :default_backend, {EXLA.Backend, client: :host}
 # Enable lazy transfers in serving defn options
-config :nx, :default_defn_options, compiler: EXLA, lazy_transfers: :always
+config :nx, :default_defn_options, compiler: EXLA
 
 # https://hexdocs.pm/exla/EXLA.html#module-clients
 # config :exla, :default_client, :cuda
 
 config :exla, :clients,
   host: [platform: :host],
-  cuda: [platform: :cuda, preallocate: false, memory_fraction: 0.96]
+  cuda: [platform: :cuda, preallocate: true, memory_fraction: 0.95]
