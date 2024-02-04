@@ -11,4 +11,4 @@ config :nx, :default_defn_options, compiler: EXLA, lazy_transfers: :always
 
 config :exla, :clients,
   host: [platform: :host],
-  cuda: [platform: :cuda, preallocate: false]
+  cuda: [platform: :cuda, preallocate: false, memory_fraction: 0.99]
