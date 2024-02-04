@@ -22,9 +22,9 @@ defmodule HelloDiffusion.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:nx, "~> 0.6.4"},
-      {:exla, "~> 0.6.4"},
-      {:bumblebee, "~> 0.4.2"}
+      {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
+      {:exla, github: "elixir-nx/nx", sparse: "exla", override: true},
+      {:bumblebee, github: "elixir-nx/bumblebee"}
     ]
   end
 end
