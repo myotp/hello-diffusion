@@ -12,24 +12,24 @@ defmodule HelloDiffusion.Model do
       Bumblebee.load_model({:hf, repo_id, subdir: "vae"}, [architecture: :decoder] ++ opts)
 
     {:ok, scheduler} = Bumblebee.load_scheduler({:hf, repo_id, subdir: "scheduler"})
-    {:ok, featurizer} = Bumblebee.load_featurizer({:hf, repo_id, subdir: "feature_extractor"})
-    {:ok, safety_checker} = Bumblebee.load_model({:hf, repo_id, subdir: "safety_checker"}, opts)
+    # {:ok, featurizer} = Bumblebee.load_featurizer({:hf, repo_id, subdir: "feature_extractor"})
+    # {:ok, safety_checker} = Bumblebee.load_model({:hf, repo_id, subdir: "safety_checker"}, opts)
 
     serving =
       Bumblebee.Diffusion.StableDiffusion.text_to_image(clip, unet, vae, tokenizer, scheduler,
         num_steps: 20,
         num_images_per_prompt: 1,
-        safety_checker: safety_checker,
-        safety_checker_featurizer: featurizer,
+        safety_checker: nil,
+        safety_checker_featurizer: nil,
         compile: [batch_size: 1, sequence_length: 60],
         # Option 1
-        # preallocate_params: true,
-        # defn_options: [compiler: EXLA]
+        preallocate_params: true,
+        defn_options: [compiler: EXLA]
         # Option 2 (reduces GPU usage, but runs noticeably slower)
-        defn_options: [compiler: EXLA, lazy_transfers: :always]
+        # defn_options: [compiler: EXLA, lazy_transfers: :always]
       )
 
-    {:ok, serving}
+    serving
   end
 
   def start_serving_process(serving) do

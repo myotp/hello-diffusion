@@ -1,6 +1,7 @@
 import Config
 
-config :nx, :default_backend, EXLA.Backend
+# config :nx, :default_backend, EXLA.Backend
+config :nx, :default_backend, {EXLA.Backend, client: :cuda}
 config :nx, :default_defn_options, compiler: EXLA
 
 # https://hexdocs.pm/exla/EXLA.html#module-clients
