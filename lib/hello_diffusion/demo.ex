@@ -1,9 +1,6 @@
 defmodule HelloDiffusion.Demo do
-  def load_model() do
-    HelloDiffusion.Model.load()
-  end
-
-  def run(serving, prompt, filename) do
+  def run(prompt, filename) do
+    serving = HelloDiffusion.Model.load()
     x = Nx.Serving.run(serving, prompt)
     t = hd(x.results).image
 

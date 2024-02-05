@@ -2,77 +2,26 @@
 echo $XLA_TARGET
 echo $MIX_ENV
 
-iex(12)> Application.get_all_env(:exla)
-[
-  clients: [host: [platform: :host], cuda: [platform: :cuda]],
-  default_client: :cuda,
-  preferred_clients: [:cuda, :rocm, :tpu, :host]
-]
-iex(13)> Application.get_all_env(:nx)
-[
-  default_defn_options: [compiler: EXLA],
-  default_backend: {EXLA.Backend, [client: :host]}
-]
-
 iex -S mix
-Application.get_all_env(:exla)
-Application.get_all_env(:nx)
-Nx.global_default_backend({EXLA.Backend, client: :host})
-Application.get_all_env(:exla)
-
-# b16才能成功load要不不够
-alias HelloDiffusion.Model
-serving = Model.load()
-serving
-# 查看显存
-nvidia-smi
-prompt = "numbat in forest, detailed, digital art"
-x = Nx.Serving.run(serving, prompt)
+serving = HelloDiffusion.Model.load()
+x = Nx.Serving.run(serving, "football and basketball, detailed, digit art")
 t = hd(x.results).image
 
-* H
+# Image doesn't work
+{:ok, vix_image} = Image.from_nx(t)
+{:ok, bin} = Image.write(vi, :memory, suffix: ".jpg")
+File.write("/tmp/test1.jpg", bin)
 
-# 不启动进程，直接跑
-Nx.Serving.run(serving, %{prompt: "a photo of an astronaut riding a horse on mars"})
+# Kino
+kino_image = Kino.Image.new(t)
+<<h::32-big, w::32-big, channels::8, data::binary>> = kino_image.content
+{h, w, channels}
+# data - pixel data in HWC order
+# 似乎一些网上解释HWC就是RGB
+{:ok, vi} = Image.from_kino(%{width: w, height: h, format: :rgb, data: data})
+{:ok, bin} = Image.write(vi, :memory, suffix: ".jpg")
+File.write("/tmp/test2.jpg", bin)
 
-
-
-# Option 2慢一点，至少可以load
-Model.start_serving_process(serving)
-
-Model.run("a photo of an astronaut riding a horse on mars", "")
-
-repo_id = "CompVis/stable-diffusion-v1-4"
-{:ok, spec} = Bumblebee.load_spec({:hf, repo_id, subdir: "unet"})
-# spec2 = Bumblebee.configure(spec, [params_variant: "fp16", type: :bf16])
-# OK with specified diffusion_pytorch_model.fp16.safetensors
 Bumblebee.load_model({:hf, repo_id, subdir: "unet"}, params_filename: "diffusion_pytorch_model.fp16.safetensors")
-# OK with specified diffusion_pytorch_model.safetensors
-Bumblebee.load_model({:hf, repo_id, subdir: "unet"}, params_filename: "diffusion_pytorch_model.safetensors")
-# TODO
-Bumblebee.load_model({:hf, repo_id, subdir: "unet"})
 
-Bumblebee.load_model({:hf, repo_id, subdir: "unet"}, params_variant: "fp16")
-
-params_variant: fp16
-type: bf16
-
-    {filename, sharded?} =
-      infer_params_filename(repo_files, opts[:params_filename], opts[:params_variant])
-
-  @params_filenames [
-    "pytorch_model.bin",
-    "diffusion_pytorch_model.bin",
-    "model.safetensors",
-    "diffusion_pytorch_model.safetensors"
-  ]
-
-
-  diffusion_pytorch_model.fp16.safetensors
-
-
-opts = [params_variant: "fp16", type: :bf16]
-{:ok, unet} = Bumblebee.load_model({:hf, repo_id, subdir: "unet"}, opts)
-
-{:ok, spec} = Bumblebee.load_spec({:hf, "CompVis/stable-diffusion-v1-4/", subdir: "unet"})
-      spec = Bumblebee.configure(spec, num_labels: 10)
+HelloDiffusion.Demo.run("basketball and football, detailed, digital art", "/tmp/pic007.jpg")
