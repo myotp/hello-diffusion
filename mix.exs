@@ -24,7 +24,9 @@ defmodule HelloDiffusion.MixProject do
     [
       {:nx, github: "elixir-nx/nx", sparse: "nx", override: true},
       {:exla, github: "elixir-nx/nx", sparse: "exla", override: true},
-      {:bumblebee, github: "elixir-nx/bumblebee"}
+      {:image, "~> 0.42.0"},
+      {:kino, "~> 0.12.3"},
+      {:bumblebee, github: "elixir-nx/bumblebee", override: true}
     ]
   end
 end
